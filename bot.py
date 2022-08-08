@@ -1,3 +1,4 @@
+from itertools import product
 from json import load
 from urllib.error import HTTPError
 import telebot
@@ -5,7 +6,7 @@ from dotenv import load_dotenv
 import os
 import validators
 import requests
-
+from server import main
 
 load_dotenv()
 
@@ -54,6 +55,13 @@ def watch(message):
             response = requests.get(link, headers=headers)
             if response.status_code == 200:
                 bot.reply_to(message, "Alright.. I have my eyes on it.")
+                res = main(link)
+                if res == 1:
+                    bot.reply_to(message, "I'm already watching it.")
+                if type(res) == dict:
+                    product = res
+                    alert = f"Pricedrop for {product['name']} available at {product['price']}.\nHere {product['link']}"
+                    bot.send_message(message.chat_id, alert)
             else:
                 response.raise_for_status()
         except ConnectionError:
@@ -72,4 +80,5 @@ def watch(message):
             message, "I only work with amazon links for now.")
 
 
+print("I'm listening.")
 bot.infinity_polling()
