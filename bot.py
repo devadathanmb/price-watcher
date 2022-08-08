@@ -47,6 +47,7 @@ def send_hello(message):
 
 @bot.message_handler(commands=["watch"])
 def watch(message):
+    print("watching..")
     splitted_message = message.text.partition("/watch")
     link = splitted_message[2].strip()
 
@@ -60,7 +61,7 @@ def watch(message):
             message, "Oops.. That does not seem like a valid link. Try again.")
 
     # If not amazon URL
-    if "amazon" in link:
+    elif "amazon" in link:
         try:
             # Check if amazon url is valid
             response = requests.get(link, headers=headers)
@@ -69,10 +70,14 @@ def watch(message):
 
                 for product in watchlist:
                     if product["url"] == link:
-                        bot.reply_to(message, "I'm already watching it.")
+                        already_watching = True
                         break
-                bot.reply_to(message, "Alright.. I have my eyes on it.")
-                res = main(link)
+
+                if already_watching:
+                    bot.reply_to(message, "I'm already watching it.")
+                else:
+                    bot.reply_to(message, "Alright.. I have my eyes on it.")
+                    res = main(link)
 
                 # If price drops
                 if type(res) == dict:
@@ -103,6 +108,7 @@ def watch(message):
 
 @bot.message_handler(commands=["watchlist"])
 def handle_watchlist(message):
+    print("In watchlist")
     if len(watchlist) == 0:
         bot.reply_to(message, "There is nothing in the watchlist.")
     else:
@@ -141,5 +147,5 @@ def random_message(message):
 
 
 # Bot is active
-print("I'm listening.")
+print("I'm running.")
 bot.infinity_polling()
