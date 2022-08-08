@@ -1,6 +1,3 @@
-from itertools import product
-from json import load
-from urllib.error import HTTPError
 import telebot
 from dotenv import load_dotenv
 import os
@@ -8,6 +5,7 @@ import validators
 import requests
 from server import main
 from server import watchlist
+from quoters import Quote
 
 # Load environemnt variables from .env
 
@@ -133,6 +131,13 @@ def dontwatch(message):
             bot.reply_to(message, "That does not seem like a valid number.")
         except IndexError:
             bot.reply_to(message, "There is no product in that index.")
+
+
+# Handle random message
+@bot.message_handler()
+def random_message(message):
+    bot.reply_to(message, Quote.print())
+    bot.send_message(message.chat.id, "/help for help")
 
 
 # Bot is active
