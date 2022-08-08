@@ -67,7 +67,7 @@ def watch(message):
             response = requests.get(link, headers=headers)
             if response.status_code == 200:
                 # Scrape the website
-
+                already_watching = False
                 for product in watchlist:
                     if product["url"] == link:
                         already_watching = True
@@ -78,12 +78,11 @@ def watch(message):
                 else:
                     bot.reply_to(message, "Alright.. I have my eyes on it.")
                     res = main(link)
-
-                # If price drops
-                if type(res) == dict:
-                    product = res
-                    alert = f"Pricedrop for {product['title']} available at {product['price']}.\nHere {product['url']}"
-                    bot.send_message(message.chat.id, alert)
+                    # If price drops
+                    if type(res) == dict:
+                        product = res
+                        alert = f"Pricedrop for {product['title']} available at {product['price']}.\nHere {product['url']}"
+                        bot.send_message(message.chat.id, alert)
             else:
                 response.raise_for_status()
         except ConnectionError:
