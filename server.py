@@ -20,7 +20,7 @@ watchlist = []
 def main(url):
     try:
         # Make get request to the url
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=headers, timeout=2)
         page = response.text
 
         # Scrape the page
@@ -31,7 +31,7 @@ def main(url):
 
         if title and price:
             title = title.text.strip()
-            price = float(price.span.text.strip()[1:])
+            price = float(price.span.text.strip().replace(",", "")[1:])
 
             # Append the item to the watch list
             watchlist.append({"title": title, "price": price, "url": url})
@@ -44,7 +44,7 @@ def main(url):
 
                     title = soup.find(id="productTitle").text.strip()
                     current_price = float(soup.find(
-                        "span", "priceToPay").span.text.strip()[1:])
+                        "span", "priceToPay").span.text.strip().replace(",", "")[1:])
 
                     # If pricedrop found alert user
 
@@ -56,10 +56,18 @@ def main(url):
 
                     elif current_price > product["price"]:
                         product["price"] = current_price
+
+                    # Sleep for 10 mins
+                    print(watchlist)
+                    print("Sleeping..")
+                    time.sleep(10)
         else:
+            print("They probably blocked you")
             pass
     except requests.HTTPError:
         print("An http error occured.")
+    except TimeoutError:
+        print("Connection timed out")
 
 
 if __name__ == "__main__":
