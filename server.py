@@ -1,58 +1,67 @@
-from math import prod
-from urllib import response
 import requests
 from bs4 import BeautifulSoup
 import time
 import os
 
+
+# User agent headers
+
 headers = {
-    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36"}
+    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36"
+}
+
+# Array to store the items being monitored
 
 watchlist = []
+
+# Main function
 
 
 def main(url):
     try:
-        # print("In main")
+        # Make get request to the url
         response = requests.get(url, headers=headers)
-        print(response.status_code)
         page = response.text
+
+        # Scrape the page
         soup = BeautifulSoup(page, "lxml")
+        title = soup.find(id="productTitle")
+        price = soup.find(
+            "span", "priceToPay")
 
-        title = soup.find(id="productTitle").text.strip()
-        price = float(soup.find(
-            "span", "priceToPay").span.text.strip()[1:])
+        if title and price:
+            title = title.text.strip()
+            price = float(price.span.text.strip()[1:])
 
-        for product in watchlist:
-            if product["title"] == title:
-                return 1
+            # Append the item to the watch list
+            watchlist.append({"title": title, "price": price, "url": url})
 
-        watchlist.append({"title": title, "price": price, "url": url})
-        while True:
-            print("While loop is executing...")
-            print(os.getpid())
-            for product in watchlist:
-                page = requests.get(product["url"], headers=headers).text
-                soup = BeautifulSoup(page, "lxml")
+            # Keep checking for price drops for all items in watchlist
+            while True:
+                for product in watchlist:
+                    page = requests.get(product["url"], headers=headers).text
+                    soup = BeautifulSoup(page, "lxml")
 
-                title = soup.find(id="productTitle").text.strip()
-                current_price = float(soup.find(
-                    "span", "priceToPay").span.text.strip()[1:])
+                    title = soup.find(id="productTitle").text.strip()
+                    current_price = float(soup.find(
+                        "span", "priceToPay").span.text.strip()[1:])
 
-                if current_price < product["price"]:
-                    product["price"] = current_price
-                    return product
-                time.sleep(30)
-        print("I'm out")
-        print(watchlist)
-        # print(title)
-        # print(price)
+                    # If pricedrop found alert user
 
+                    if current_price < product["price"]:
+                        product["price"] = current_price
+                        return product
+
+                    # If priceraise then update the price of item in watchlist
+
+                    elif current_price > product["price"]:
+                        product["price"] = current_price
+        else:
+            pass
     except requests.HTTPError:
         print("An http error occured.")
-        pass
 
 
 if __name__ == "__main__":
-    url = "https://www.amazon.in/Dell-KB216-Wired-Multimedia-Keyboard/dp/B00ZYLMQH0/ref=sr_1_3?crid=X0A00ZWYCCS9&keywords=keyboard&qid=1659940584&sprefix=keyboar%2Caps%2C271&sr=8-3"
+    url = "http://127.0.0.1:5500/amazon.html"
     main(url)
