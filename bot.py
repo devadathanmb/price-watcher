@@ -60,7 +60,7 @@ def watch(message):
     link = splitted_message[2].strip()
 
     # Load or initalize watchlist
-    if os.path.getsize("watchlist.json") > 0:
+    if not is_empty("watchlist.json"):
         with open("watchlist.json", "r") as file:
             watchlist = json.load(file)
     else:
@@ -85,7 +85,7 @@ def watch(message):
                 for product in watchlist:
                     if product["url"] == link:
                         bot.reply_to(message, "I'm already watching it.")
-                        break
+                        return
 
                 bot.reply_to(message, "Alright.. I got my eyes on you!")
 
@@ -128,7 +128,7 @@ def watch(message):
 @bot.message_handler(commands=["watchlist"])
 def handle_watchlist(message):
     print("In watchlist")
-    if os.path.getsize("watchlist.json") > 0:
+    if not is_empty("watchlist.json"):
         with open("watchlist.json") as f:
             watchlist = json.load(f)
     else:
@@ -187,7 +187,7 @@ def is_empty(jsonfile):
         return True
     else:
         with open(jsonfile, "r") as file:
-            watchlist = json.read(file)
+            watchlist = json.load(file)
             if len(watchlist) == 0:
                 return True
             else:
