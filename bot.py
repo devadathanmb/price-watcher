@@ -45,8 +45,9 @@ def send_hello(message):
     reply_message = f'''Available commands:
 /watch <Amazon url here> - To watch the price of the item
 /watchlist - To display the items currently being monitored
-/dontwatch <watch id> - To remove the item from watchlist
-/help - To display available commands'''
+/dontwatch <watch id> - To remove the item from watch list
+/help - To display available commands
+/clearlist - To clear the watch list'''
     bot.send_message(message.chat.id, reply_message)
 
 
@@ -143,12 +144,14 @@ def handle_watchlist(message):
 
 
 # Handle clear watchlist command
+
 @bot.message_handler(commands=["clearlist"])
 def clearlist(message):
     if not is_empty("watchlist.json"):
         with open("watchlist.json", "w") as file:
             file.truncate(0)
-            bot.repy_to(message, "The watchlist has been cleared.")
+            watch_process.terminate()
+            bot.reply_to(message, "The watchlist has been cleared.")
     else:
         bot.reply_to(message, "The watchlist is already empty")
 
