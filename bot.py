@@ -181,7 +181,8 @@ def dontwatch(message):
                 file.write(json.dumps(watchlist))
             watch_process = Process(
                 target=watcher, args=(watchlist, ))
-            watch_process.start()
+            if len(watchlist) > 0:
+                watch_process.start()
         except ValueError:
             bot.reply_to(message, "That does not seem like a valid number.")
         except IndexError:
