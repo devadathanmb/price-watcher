@@ -46,8 +46,9 @@ def send_hello(message):
 /watch <Amazon url here> - To watch the price of the item
 /watchlist - To display the items currently being monitored
 /dontwatch <watch id> - To remove the item from watch list
+/clearlist - To clear the watch list
 /help - To display available commands
-/clearlist - To clear the watch list'''
+'''
     bot.send_message(message.chat.id, reply_message)
 
 
