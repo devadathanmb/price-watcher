@@ -154,9 +154,20 @@ def dontwatch(message):
     else:
         try:
             index = int(index)
+
+            with open("watchlist.json", "r") as file:
+                watchlist = json.load(file)
             bot.reply_to(
                 message, f"Not watching {watchlist[index - 1]['title']} anymore")
             watchlist.pop(index - 1)
+            print("Removing the item, terminating old process and starting new process")
+            global watch_process
+            watch_process.terminate()
+            with open("watchlist.json", "w") as file:
+                file.write(json.dumps(watchlist))
+            watch_process = Process(
+                target=watcher, args=(watchlist, ))
+            watch_process.start()
         except ValueError:
             bot.reply_to(message, "That does not seem like a valid number.")
         except IndexError:
