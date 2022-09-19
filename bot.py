@@ -7,6 +7,7 @@ from quoters import Quote
 import json
 from multiprocessing import Process
 from server import watcher
+from server import scrapper
 
 # Load environemnt variables from .env
 
@@ -93,13 +94,13 @@ def watch(message):
                 global watch_process
                 if watching == False:
                     watch_process = Process(
-                        target=watcher, args=(link, ))
+                        target=scrapper, args=(link, ))
                     watch_process.start()
                 else:
                     print("Terminating old processes and starting new one")
                     watch_process.terminate()
                     watch_process = Process(
-                        target=watcher, args=(link, ))
+                        target=scrapper, args=(link, ))
                     watch_process.start()
                 watching = True
             else:

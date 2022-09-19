@@ -18,10 +18,10 @@ headers = {
 
 bot = telebot.TeleBot(os.getenv("API_KEY"))
 
-# Main function
+# Scrapper function
 
 
-def watcher(url):
+def scrapper(url):
     try:
         if os.path.getsize("watchlist.json") > 0:
             with open("watchlist.json") as f:
@@ -50,31 +50,8 @@ def watcher(url):
                 print("Written item into file")
                 f.write(json.dumps(watchlist))
 
-            # Keep checking for price drops for all items in watchlist
-            while True:
-                for product in watchlist:
-                    page = requests.get(product["url"], headers=headers).text
-                    soup = BeautifulSoup(page, "lxml")
+            watcher(watchlist)
 
-                    title = soup.find(id="productTitle").text.strip()
-                    current_price = float(soup.find(
-                        "span", "priceToPay").span.text.strip().replace(",", "")[1:])
-
-                    # If pricedrop found alert user
-
-                    if current_price < product["price"]:
-                        product["price"] = current_price
-                        alert_user(product)
-
-                    # If priceraise then update the price of item in watchlist
-
-                    elif current_price > product["price"]:
-                        product["price"] = current_price
-
-                    # Sleep for 10 mins
-                    print(watchlist)
-                    print("Sleeping..")
-                    time.sleep(10)
         else:
             print("They probably blocked you")
             pass
@@ -82,6 +59,35 @@ def watcher(url):
         print("An http error occured.")
     except TimeoutError:
         print("Connection timed out")
+
+
+# Watcher function
+def watcher(watchlist):
+    # Keep checking for price drops for all items in watchlist
+    while True:
+        for product in watchlist:
+            page = requests.get(product["url"], headers=headers).text
+            soup = BeautifulSoup(page, "lxml")
+
+            title = soup.find(id="productTitle").text.strip()
+            current_price = float(soup.find(
+                "span", "priceToPay").span.text.strip().replace(",", "")[1:])
+
+            # If pricedrop found alert user
+
+            if current_price < product["price"]:
+                product["price"] = current_price
+                alert_user(product)
+
+            # If priceraise then update the price of item in watchlist
+
+            elif current_price > product["price"]:
+                product["price"] = current_price
+
+            # Sleep for 10 mins
+            print(watchlist)
+            print("Sleeping..")
+            time.sleep(10)
 
 
 def alert_user(product):
