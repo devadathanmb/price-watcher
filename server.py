@@ -1,8 +1,12 @@
+from itertools import product
 import requests
 from bs4 import BeautifulSoup
 import time
 import os
+import telebot
+import json
 
+# from bot import watchlist
 
 # User agent headers
 
@@ -10,15 +14,21 @@ headers = {
     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36"
 }
 
-# Array to store the items being monitored
+# Initalizing bot object with the API_KEY
 
-watchlist = []
+bot = telebot.TeleBot(os.getenv("API_KEY"))
 
 # Main function
 
 
-def main(url):
+def watcher(url):
     try:
+        if os.path.getsize("watchlist.json") > 0:
+            with open("watchlist.json") as f:
+                watchlist = json.load(f)
+        else:
+            watchlist = []
+
         # Make get request to the url
         response = requests.get(url, headers=headers, timeout=2)
         page = response.text
@@ -36,6 +46,10 @@ def main(url):
             # Append the item to the watch list
             watchlist.append({"title": title, "price": price, "url": url})
 
+            with open("watchlist.json", "w") as f:
+                print("Written item into file")
+                f.write(json.dumps(watchlist))
+
             # Keep checking for price drops for all items in watchlist
             while True:
                 for product in watchlist:
@@ -50,7 +64,7 @@ def main(url):
 
                     if current_price < product["price"]:
                         product["price"] = current_price
-                        return product
+                        alert_user(product)
 
                     # If priceraise then update the price of item in watchlist
 
@@ -70,6 +84,12 @@ def main(url):
         print("Connection timed out")
 
 
+def alert_user(product):
+    updates = bot.get_updates()
+    bot.send_message(
+        updates.message.chat.id, f"The price is drippin for {product['title']}")
+
+
 if __name__ == "__main__":
     url = "http://127.0.0.1:5500/amazon.html"
-    main(url)
+    watcher(url)

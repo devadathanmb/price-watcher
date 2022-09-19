@@ -3,9 +3,10 @@ from dotenv import load_dotenv
 import os
 import validators
 import requests
-from server import main
-from server import watchlist
 from quoters import Quote
+import json
+from multiprocessing import Process
+from server import watcher
 
 # Load environemnt variables from .env
 
@@ -20,8 +21,13 @@ bot = telebot.TeleBot(os.getenv("API_KEY"))
 headers = {
     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.5112.81 Safari/537.36"}
 
+# Inital config
+
+watching = False
+watch_process = None
 
 # Handle start command
+
 
 @bot.message_handler(commands=["start"])
 def start(message):
@@ -47,9 +53,17 @@ def send_hello(message):
 
 @bot.message_handler(commands=["watch"])
 def watch(message):
-    print("watching..")
+    print("In watch")
+
     splitted_message = message.text.partition("/watch")
     link = splitted_message[2].strip()
+
+    # Load or initalize watchlist
+    if os.path.getsize("watchlist.json") > 0:
+        with open("watchlist.json", "r") as file:
+            watchlist = json.load(file)
+    else:
+        watchlist = []
 
     # If URL not given
     if len(link) == 0:
@@ -66,23 +80,28 @@ def watch(message):
             # Check if amazon url is valid
             response = requests.get(link, headers=headers)
             if response.status_code == 200:
-                # Scrape the website
-                already_watching = False
+                # Check if the product is already present in the watchlist
                 for product in watchlist:
                     if product["url"] == link:
-                        already_watching = True
+                        bot.reply_to(message, "I'm already watching it.")
                         break
 
-                if already_watching:
-                    bot.reply_to(message, "I'm already watching it.")
+                bot.reply_to(message, "Alright.. I got my eyes on you!")
+
+                # Create a new process for watching prices if not started yet
+                global watching
+                global watch_process
+                if watching == False:
+                    watch_process = Process(
+                        target=watcher, args=(link, ))
+                    watch_process.start()
                 else:
-                    bot.reply_to(message, "Alright.. I have my eyes on it.")
-                    res = main(link)
-                    # If price drops
-                    if type(res) == dict:
-                        product = res
-                        alert = f"Pricedrop for {product['title']} available at {product['price']}.\nHere {product['url']}"
-                        bot.send_message(message.chat.id, alert)
+                    print("Terminating old processes and starting new one")
+                    watch_process.terminate()
+                    watch_process = Process(
+                        target=watcher, args=(link, ))
+                    watch_process.start()
+                watching = True
             else:
                 response.raise_for_status()
         except ConnectionError:
@@ -108,6 +127,11 @@ def watch(message):
 @bot.message_handler(commands=["watchlist"])
 def handle_watchlist(message):
     print("In watchlist")
+    if os.path.getsize("watchlist.json") > 0:
+        with open("watchlist.json") as f:
+            watchlist = json.load(f)
+    else:
+        watchlist = []
     if len(watchlist) == 0:
         bot.reply_to(message, "There is nothing in the watchlist.")
     else:
