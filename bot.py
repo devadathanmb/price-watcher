@@ -181,6 +181,19 @@ def random_message(message):
     bot.send_message(message.chat.id, "/help for help")
 
 
+# Check if file is empty or not
+def is_empty(jsonfile):
+    if os.path.getsize(jsonfile) == 0:
+        return True
+    else:
+        with open(jsonfile, "r") as file:
+            watchlist = json.read(file)
+            if len(watchlist) == 0:
+                return True
+            else:
+                return False
+
+
 # Bot is active
 print("I'm running.")
 bot.infinity_polling()
