@@ -141,6 +141,17 @@ def handle_watchlist(message):
             reply += str(index + 1) + ". " + product["title"] + "\n"
         bot.reply_to(message, reply)
 
+
+# Handle clear watchlist command
+@bot.message_handler(commands=["clearlist"])
+def clearlist(message):
+    if not is_empty("watchlist.json"):
+        with open("watchlist.json", "w") as file:
+            file.truncate(0)
+            bot.repy_to(message, "The watchlist has been cleared.")
+    else:
+        bot.reply_to(message, "The watchlist is already empty")
+
 # Handle dontwatch command
 
 
