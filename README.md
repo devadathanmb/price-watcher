@@ -28,7 +28,7 @@ pip install -r requirements.txt
 4. Then generate an API token in telegram using BotFather. See [here](https://pianalytix.com/telegram-bot-api-how-to-generate-auth-token/) for detailed steps.
 
 5. Create a ```.env``` file in the project directory and store the generated API token into it.  
-It should be of the format ```API_TOKEN=Your API token goes here```
+*(It should be of the format ```API_TOKEN=Your API token goes here```)*
 
 6. Start the bot using ```python bot.py```
 
@@ -58,4 +58,4 @@ The bot offers you a number of commands to manage your price watch list and add 
 ## How does this work?
 
 This is a very simple bot made using the [pyTelegramBotAPI](https://pypi.org/project/pyTelegramBotAPI/) python module.  
-Once a product has been added to the watch list, the bot uses the [requests](https://pypi.org/project/requests/) python module to get the webpage and uses [beautifulsoup](https://pypi.org/project/beautifulsoup4/) to scrap the webpage for the need information. Since there is a limit to the number of requests to be made, the bot waits for 10 seconds before making another request.  Any price drops is notified back to the user as a telegram message.
+Once a product has been added to the watch list, the bot uses the [requests](https://pypi.org/project/requests/) python module to get the webpage and uses [beautifulsoup](https://pypi.org/project/beautifulsoup4/) to scrap the webpage for the need information. Since there is a limit to the number of requests to be made, the bot waits for 10 seconds before making another request.  Any price drops is notified back to the user as a telegram message. All the items to be monitored along with their corresponding url, name and current price is stored in a '''watchlist.json''' file in the project directory.
