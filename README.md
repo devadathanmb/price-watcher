@@ -16,8 +16,8 @@ pip --version # This should return the installed version of pip
 ```
 2. Clone the repository and cd into it
 ```bash
-git clone 
-cd
+git clone https://github.com/devadathanmb/Price-watcher.git
+cd Price-watcher
 ```
 
 3. Install the required packages using
