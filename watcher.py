@@ -105,4 +105,4 @@ def alert_user(product, chat_id):
 
 if __name__ == "__main__":
     url = "http://127.0.0.1:5500/tests/amazon.html"
-    scrapper(url, "***REMOVED***")
+    scrapper(url, os.getenv("CHAT_ID"))
