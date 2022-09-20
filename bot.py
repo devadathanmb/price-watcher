@@ -96,13 +96,13 @@ def watch(message):
                 global watch_process
                 if watching == False:
                     watch_process = Process(
-                        target=scrapper, args=(link, ))
+                        target=scrapper, args=(link, message.chat.id))
                     watch_process.start()
                 else:
                     print("Terminating old processes and starting new one")
                     watch_process.terminate()
                     watch_process = Process(
-                        target=scrapper, args=(link, ))
+                        target=scrapper, args=(link, message.chat.id))
                     watch_process.start()
                 watching = True
             else:
@@ -181,7 +181,7 @@ def dontwatch(message):
             with open("watchlist.json", "w") as file:
                 file.write(json.dumps(watchlist))
             watch_process = Process(
-                target=watcher, args=(watchlist, ))
+                target=watcher, args=(watchlist, message.chat.id))
             if len(watchlist) > 0:
                 watch_process.start()
         except ValueError:

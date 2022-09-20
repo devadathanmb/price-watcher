@@ -1,12 +1,20 @@
-from itertools import product
+
 import requests
+from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 import time
 import os
 import telebot
 import json
 
-# from bot import watchlist
+# Load environemnt variables from .env
+
+load_dotenv()
+
+# Initalizing bot object with API_KEY
+
+bot = telebot.TeleBot(os.getenv("API_KEY"))
+
 
 # User agent headers
 
@@ -21,7 +29,7 @@ bot = telebot.TeleBot(os.getenv("API_KEY"))
 # Scrapper function
 
 
-def scrapper(url):
+def scrapper(url, chat_id):
     try:
         if os.path.getsize("watchlist.json") > 0:
             with open("watchlist.json") as f:
@@ -50,7 +58,7 @@ def scrapper(url):
                 print("Written item into file")
                 f.write(json.dumps(watchlist))
 
-            watcher(watchlist)
+            watcher(watchlist, chat_id)
 
         else:
             print("They probably blocked you")
@@ -62,7 +70,7 @@ def scrapper(url):
 
 
 # Watcher function
-def watcher(watchlist):
+def watcher(watchlist, chat_id):
     # Keep checking for price drops for all items in watchlist
     while True:
         for product in watchlist:
@@ -77,7 +85,7 @@ def watcher(watchlist):
 
             if current_price < product["price"]:
                 product["price"] = current_price
-                alert_user(product)
+                alert_user(product, chat_id)
 
             # If priceraise then update the price of item in watchlist
 
@@ -90,12 +98,11 @@ def watcher(watchlist):
             time.sleep(10)
 
 
-def alert_user(product):
-    updates = bot.get_updates()
+def alert_user(product, chat_id):
     bot.send_message(
-        updates.message.chat.id, f"The price is drippin for {product['title']}")
+        chat_id, f"The price is drippin for {product['title']}.\nBuy now at {product['url']}")
 
 
 if __name__ == "__main__":
-    url = "http://127.0.0.1:5500/amazon.html"
-    watcher(url)
+    url = "http://127.0.0.1:5500/tests/amazon.html"
+    scrapper(url, "***REMOVED***")
