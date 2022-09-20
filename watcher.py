@@ -103,5 +103,6 @@ def alert_user(product, chat_id):
 
 
 if __name__ == "__main__":
+    # This is only for testing purposes
     url = "http://127.0.0.1:5500/tests/amazon.html"
     scrapper(url, os.getenv("CHAT_ID"))
