@@ -6,8 +6,8 @@ import requests
 from quoters import Quote
 import json
 from multiprocessing import Process
-from server import watcher
-from server import scrapper
+from watcher import watcher
+from watcher import scrapper
 
 # Load environemnt variables from .env
 
