@@ -96,7 +96,7 @@ def watch(message):
                         bot.reply_to(message, "I'm already watching it.")
                         return
                 if not already_watching:
-                    bot.reply_to(message, "Alright.. I got my eyes on you!")
+                    bot.reply_to(message, "Alright.. I got my eyes on that. You can sit back and relax now.")
 
                 # Create a new process to watch the prices
                 global watching
