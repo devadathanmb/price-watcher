@@ -93,20 +93,20 @@ def watch(message):
                 if not already_watching:
                     bot.reply_to(message, "Alright.. I got my eyes on you!")
 
-                # Create a new process for watching prices if not started yet
+                # Create a new process to watch the prices
                 global watching
                 global watch_process
-                if watching == False:
-                    watch_process = Process(
-                        target=scrapper, args=(link, message.chat.id))
-                    watch_process.start()
-                else:
-                    print("Terminating old processes and starting new one")
+
+                # If already watching the list, then terminate it
+                if watching:
                     watch_process.terminate()
-                    watch_process = Process(
-                        target=scrapper, args=(link, message.chat.id))
-                    watch_process.start()
+
+                # Starting the new process
+                watch_process = Process(
+                    target=scrapper, args=(link, message.chat.id))
+                watch_process.start()
                 watching = True
+
             else:
                 response.raise_for_status()
         except ConnectionError:
