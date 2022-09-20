@@ -43,7 +43,7 @@ def start(message):
 @bot.message_handler(commands=["help"])
 def send_hello(message):
     reply_message = f'''Available commands:
-/watch <Amazon url here> - To watch the price of the item
+/watch <Amazon url here> - To watch the price drop for an item
 /watchlist - To display the items currently being monitored
 /dontwatch <watch id> - To remove the item from watch list
 /clearlist - To clear the watch list
@@ -56,7 +56,6 @@ def send_hello(message):
 
 @bot.message_handler(commands=["watch"])
 def watch(message):
-    print("In watch")
 
     splitted_message = message.text.partition("/watch")
     link = splitted_message[2].strip()
@@ -75,12 +74,12 @@ def watch(message):
 
     # If URL not given
     if len(link) == 0:
-        bot.reply_to(message, "Please provide the link")
+        bot.reply_to(message, "Please provide the link of the item.")
 
     # If URL not valid
     elif not validators.url(link):
         bot.reply_to(
-            message, "Oops.. That does not seem like a valid link. Try again.")
+            message, "Oops.. That does not seem like a valid link. Check the link and try again.")
 
     # If not amazon URL
     elif "amazon" in link:
@@ -129,7 +128,7 @@ def watch(message):
                 bot.reply_to(message, "Oops.. Something went wrong.")
     else:
         bot.reply_to(
-            message, "I only work with amazon links for now.")
+            message, "I only work with amazon links for now. Please provide an amazon link.")
 
 # Handle watchlist command
 
@@ -161,9 +160,9 @@ def clearlist(message):
                 watch_process.terminate()
             except AttributeError:
                 pass
-            bot.reply_to(message, "The watchlist has been cleared.")
+            bot.reply_to(message, "The watch list has been cleared.")
     else:
-        bot.reply_to(message, "The watchlist is already empty")
+        bot.reply_to(message, "The watch list is already empty.")
 
 # Handle dontwatch command
 
@@ -174,7 +173,7 @@ def dontwatch(message):
     index = splitted_message[2]
     if len(index) == 0:
         bot.reply_to(
-            message, "Please provide what product to remove from the watchlist.")
+            message, "Please provide what product to remove from the watch list.")
     else:
         try:
             index = int(index)
@@ -182,9 +181,8 @@ def dontwatch(message):
             with open("watchlist.json", "r") as file:
                 watchlist = json.load(file)
             bot.reply_to(
-                message, f"Not watching {watchlist[index - 1]['title']} anymore")
+                message, f"Not watching {watchlist[index - 1]['title']} anymore.")
             watchlist.pop(index - 1)
-            print("Removing the item, terminating old process and starting new process")
             global watch_process
             try:
                 watch_process.terminate()
