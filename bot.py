@@ -198,13 +198,14 @@ def dontwatch(message):
 
 
 # Handle random message
+
 @bot.message_handler()
 def random_message(message):
     bot.reply_to(message, Quote.print())
     bot.send_message(message.chat.id, "/help for help")
 
 
-# Check if file is empty or not
+# Function to check if the json file is empty
 def is_empty(jsonfile):
     if os.path.getsize(jsonfile) == 0:
         return True
@@ -218,5 +219,5 @@ def is_empty(jsonfile):
 
 
 # Bot is active
-print("I'm running.")
+print("Bot is up and running.")
 bot.infinity_polling()
