@@ -84,12 +84,14 @@ def watch(message):
             response = requests.get(link, headers=headers)
             if response.status_code == 200:
                 # Check if the product is already present in the watchlist
+                already_watching = False
                 for product in watchlist:
                     if product["url"] == link:
+                        already_watching = True
                         bot.reply_to(message, "I'm already watching it.")
                         return
-
-                bot.reply_to(message, "Alright.. I got my eyes on you!")
+                if not already_watching:
+                    bot.reply_to(message, "Alright.. I got my eyes on you!")
 
                 # Create a new process for watching prices if not started yet
                 global watching
