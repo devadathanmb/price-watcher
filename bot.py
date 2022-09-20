@@ -61,6 +61,11 @@ def watch(message):
     splitted_message = message.text.partition("/watch")
     link = splitted_message[2].strip()
 
+    # Create watchlist.json if it does not exist
+    if not os.path.exists("watchlist.json"):
+        with open("watchlist.json", "w") as file:
+            pass
+
     # Load or initalize watchlist
     if not is_empty("watchlist.json"):
         with open("watchlist.json", "r") as file:
