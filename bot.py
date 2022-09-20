@@ -136,7 +136,6 @@ def watch(message):
 
 @bot.message_handler(commands=["watchlist"])
 def handle_watchlist(message):
-    print("In watchlist")
     if not is_empty("watchlist.json"):
         with open("watchlist.json") as f:
             watchlist = json.load(f)
@@ -158,7 +157,10 @@ def clearlist(message):
     if not is_empty("watchlist.json"):
         with open("watchlist.json", "w") as file:
             file.truncate(0)
-            watch_process.terminate()
+            try:
+                watch_process.terminate()
+            except AttributeError:
+                pass
             bot.reply_to(message, "The watchlist has been cleared.")
     else:
         bot.reply_to(message, "The watchlist is already empty")
@@ -184,7 +186,10 @@ def dontwatch(message):
             watchlist.pop(index - 1)
             print("Removing the item, terminating old process and starting new process")
             global watch_process
-            watch_process.terminate()
+            try:
+                watch_process.terminate()
+            except AttributeError:
+                pass
             with open("watchlist.json", "w") as file:
                 file.write(json.dumps(watchlist))
             watch_process = Process(
