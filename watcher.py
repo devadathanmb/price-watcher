@@ -96,6 +96,8 @@ def watcher(watchlist, chat_id):
             print("Sleeping..")
             time.sleep(10)
 
+# Function that alerts the user when price drops
+
 
 def alert_user(product, chat_id):
     bot.send_message(
