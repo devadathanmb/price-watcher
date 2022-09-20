@@ -1,4 +1,3 @@
-
 import requests
 from dotenv import load_dotenv
 from bs4 import BeautifulSoup
@@ -87,12 +86,12 @@ def watcher(watchlist, chat_id):
                 product["price"] = current_price
                 alert_user(product, chat_id)
 
-            # If priceraise then update the price of item in watchlist
+            # If price raise then update the price of item in watchlist
 
             elif current_price > product["price"]:
                 product["price"] = current_price
 
-            # Sleep for 10 mins
+            # Sleep for 10 seconds
             print(watchlist)
             print("Sleeping..")
             time.sleep(10)
