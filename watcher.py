@@ -60,7 +60,7 @@ def scrapper(url, chat_id):
             watcher(watchlist, chat_id)
 
         else:
-            print("They probably blocked you")
+            print("Could not scrape webpage properly.")
             pass
     except requests.HTTPError:
         print("An http error occured.")
@@ -99,7 +99,7 @@ def watcher(watchlist, chat_id):
 
 def alert_user(product, chat_id):
     bot.send_message(
-        chat_id, f"The price is drippin for {product['title']}.\nBuy now at {product['url']}")
+        chat_id, f"I found a price drop for {product['title']}.\nBuy now at {product['url']}.")
 
 
 if __name__ == "__main__":
