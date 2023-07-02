@@ -28,7 +28,7 @@ pip install -r requirements.txt
 4. Then generate an API token in telegram using ```BotFather``` telegram bot. See [here](https://pianalytix.com/telegram-bot-api-how-to-generate-auth-token/) for detailed steps.
 
 5. Create a ```.env``` file in the project directory and store the generated API token into it.  
-*(It should be of the format ```API_TOKEN=Your API token goes here```)*
+*(It should be of the format ```API_KEY=Your API token goes here```)*
 
 6. Start the bot using ```python bot.py```
 
